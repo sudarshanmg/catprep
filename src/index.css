@@ -1,0 +1,111 @@
+@import 'tailwindcss';
+
+/*
+  CAT Sprint — visual system
+  "chalk on slate": a cool ink ground, warm chalk type, mono for every number.
+  Chart mark colors are the validated categorical slots (see charts.tsx) — they are
+  functional, not decorative, and must not be re-picked by eye.
+*/
+@theme {
+  /* surfaces */
+  --color-ink: #0f1216; /* page ground */
+  --color-slate: #171c22; /* raised card / chart surface (palette validated vs this) */
+  --color-raised: #1f2731; /* inputs, hover */
+  --color-line: #2a3441; /* hairlines */
+  --color-line-soft: #212a34;
+
+  /* type */
+  --color-chalk: #e8e4da; /* primary */
+  --color-chalk-dim: #a6adb5; /* secondary */
+  --color-chalk-mute: #737e89; /* muted / axis */
+
+  /* sections — fixed identity, never reassigned */
+  --color-qa: #d95926;
+  --color-dilr: #3987e5;
+  --color-varc: #199e70;
+
+  /* error tags — fixed slot order */
+  --color-tag-concept: #3987e5;
+  --color-tag-silly: #d95926;
+  --color-tag-selection: #199e70;
+  --color-tag-time: #c98500;
+
+  /* status — reserved, never reused as a series */
+  --color-good: #0ca30c;
+  --color-warning: #fab219;
+  --color-critical: #d03b3b;
+
+  /* confidence ramp (ordinal, one hue) */
+  --color-conf-1: #184f95;
+  --color-conf-2: #3987e5;
+  --color-conf-3: #9ec5f4;
+
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-chalk);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* the app is a fixed-height shell; only panels scroll */
+  overscroll-behavior-y: none;
+}
+
+/* Numbers are data: tabular everywhere, so columns of metrics line up. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* The eyebrow: a small mono label that titles every panel. Structural, not decorative —
+   it always names the unit of the number underneath it. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-chalk-mute);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-conf-3);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Recharts hygiene: recessive grid, no focus rings on surfaces */
+.recharts-cartesian-grid line {
+  stroke: var(--color-line-soft);
+}
+.recharts-surface:focus {
+  outline: none;
+}
+.recharts-wrapper {
+  font-family: var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* thin scrollbars so panels don't gain chrome on desktop */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
