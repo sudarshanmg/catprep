@@ -1,0 +1,152 @@
+{
+  "dayLogs": {
+    "2026-08-12": {
+      "date": "2026-08-12",
+      "qaConceptDone": true,
+      "qaProblemsSolved": 10,
+      "varcDone": false,
+      "readingDone": true,
+      "formulaSheetUpdated": true
+    },
+    "2026-08-13": {
+      "date": "2026-08-13",
+      "qaConceptDone": true,
+      "qaProblemsSolved": 10,
+      "varcDone": false,
+      "readingDone": false,
+      "formulaSheetUpdated": true,
+      "notes": "do not care about profiler"
+    }
+  },
+  "dilrSets": [
+    {
+      "date": "2026-08-12",
+      "archetype": "Sitting Arrangements",
+      "mode": "learning",
+      "minutesSpent": 20,
+      "scaffoldUsed": "seating",
+      "stallPoint": "couldnt fix a seating party",
+      "id": "78fd1db5-3881-4913-b459-7f285659c61f"
+    },
+    {
+      "date": "2026-08-12",
+      "archetype": "Sitting Arrangements",
+      "mode": "timed",
+      "minutesSpent": 10,
+      "triageCall": "attempt",
+      "triageWasCorrect": true,
+      "crackedInCap": false,
+      "scaffoldUsed": "network",
+      "stallPoint": "couldnt fix the seating party",
+      "id": "c00031ca-e040-4963-8ee3-9c31ab3e85c4"
+    },
+    {
+      "date": "2026-08-12",
+      "archetype": "Sitting Arrangements",
+      "mode": "timed",
+      "minutesSpent": 5,
+      "triageCall": "attempt",
+      "triageWasCorrect": true,
+      "crackedInCap": true,
+      "scaffoldUsed": "network",
+      "id": "182dead1-b053-4d25-a925-59dae9316cda"
+    },
+    {
+      "date": "2026-08-13",
+      "archetype": "Line & Bar Charts",
+      "mode": "timed",
+      "minutesSpent": 14,
+      "triageCall": "attempt",
+      "triageWasCorrect": true,
+      "crackedInCap": false,
+      "scaffoldUsed": "table",
+      "id": "045813d2-9539-43d3-8e8f-d0a66b78b5dc"
+    },
+    {
+      "date": "2026-08-13",
+      "archetype": "Line & Bar Charts",
+      "mode": "learning",
+      "minutesSpent": 20,
+      "scaffoldUsed": "table",
+      "id": "fdb147cd-9337-44eb-8460-94f4eafa0ca1"
+    },
+    {
+      "date": "2026-08-13",
+      "archetype": "Line & Bar Charts",
+      "mode": "timed",
+      "minutesSpent": 14,
+      "triageCall": "attempt",
+      "triageWasCorrect": true,
+      "crackedInCap": false,
+      "scaffoldUsed": "grid",
+      "id": "11613db8-942c-48f9-b3d0-1bc2ad1f490a"
+    }
+  ],
+  "errors": [
+    {
+      "date": "2026-08-12",
+      "section": "QA",
+      "topic": "profits",
+      "tag": "silly",
+      "id": "12e79633-6c9d-4101-a842-a1cbe78b729f"
+    },
+    {
+      "date": "2026-08-12",
+      "section": "QA",
+      "topic": "profits",
+      "tag": "concept",
+      "id": "1b4004b7-48a1-4105-9ace-ca4593d9cf7c"
+    },
+    {
+      "date": "2026-08-12",
+      "section": "QA",
+      "topic": "profits",
+      "tag": "concept",
+      "id": "ace0c0f8-ab5a-4e65-856a-87b7e25b9a68"
+    },
+    {
+      "date": "2026-08-12",
+      "section": "QA",
+      "topic": "profits",
+      "tag": "time",
+      "id": "536ae8e6-4901-4294-ab36-c101893f1f49"
+    },
+    {
+      "date": "2026-08-13",
+      "section": "QA",
+      "topic": "interest",
+      "tag": "silly",
+      "id": "9d1d8f6c-9648-4a04-806c-514263ea9b90"
+    },
+    {
+      "date": "2026-08-13",
+      "section": "QA",
+      "topic": "interests",
+      "tag": "silly",
+      "note": "calculation",
+      "id": "a3fca5eb-2639-49fa-94ce-24f279e7b936"
+    },
+    {
+      "date": "2026-08-13",
+      "section": "DILR",
+      "topic": "bar",
+      "tag": "silly",
+      "id": "7fb5f743-dd09-408a-96a5-b046bf12c289"
+    },
+    {
+      "date": "2026-08-13",
+      "section": "DILR",
+      "topic": "stacked-bar",
+      "tag": "concept",
+      "id": "13a4e10b-cb3e-4e1c-b9b0-15fc63cfb5bb"
+    },
+    {
+      "date": "2026-08-13",
+      "section": "DILR",
+      "topic": "line",
+      "tag": "silly",
+      "id": "bf21ab82-b65f-4d36-8586-e5247d8ba2c8"
+    }
+  ],
+  "mocks": []
+}
