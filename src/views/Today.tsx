@@ -53,7 +53,7 @@ export function Today() {
           onClick={() => setActiveDate(shiftDate(activeDate, -1))}
           disabled={atStart}
           aria-label="Previous day"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line bg-slate text-chalk-dim hover:text-chalk disabled:opacity-30"
+          className="grid h-11 w-11 shrink-0 place-items-center border border-line bg-slate text-chalk-dim transition-colors hover:border-neon hover:text-neon disabled:opacity-30 disabled:hover:border-line disabled:hover:text-chalk-dim"
         >
           ‹
         </button>
@@ -73,7 +73,7 @@ export function Today() {
           onClick={() => setActiveDate(shiftDate(activeDate, 1))}
           disabled={atEnd}
           aria-label="Next day"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line bg-slate text-chalk-dim hover:text-chalk disabled:opacity-30"
+          className="grid h-11 w-11 shrink-0 place-items-center border border-line bg-slate text-chalk-dim transition-colors hover:border-neon hover:text-neon disabled:opacity-30 disabled:hover:border-line disabled:hover:text-chalk-dim"
         >
           ›
         </button>
@@ -121,10 +121,12 @@ export function Today() {
                 (_, i) => (
                   <span
                     key={i}
-                    className="h-1.5 flex-1 rounded-full"
+                    /* Filled pips are lit, like the bar's workspace indicator. */
+                    className={i < todaysSets.length ? 'glow h-1.5 flex-1' : 'h-1.5 flex-1'}
                     style={{
                       background:
                         i < todaysSets.length ? SECTION_COLOR.DILR : 'var(--color-line)',
+                      ['--glow' as string]: SECTION_COLOR.DILR,
                     }}
                   />
                 ),
@@ -140,14 +142,14 @@ export function Today() {
                 {todaysSets.map((s) => (
                   <li
                     key={s.id}
-                    className="flex items-center gap-2 rounded-lg bg-raised/50 px-2.5 py-2 text-xs"
+                    className="flex items-center gap-2 bg-raised/50 px-2.5 py-2 text-xs"
                   >
                     <span className="min-w-0 flex-1 truncate text-chalk">{s.archetype}</span>
                     <span className="num text-chalk-mute">{s.minutesSpent}m</span>
                     {s.mode === 'timed' ? (
                       <>
                         <span
-                          className="num rounded px-1.5 py-0.5 text-[0.625rem]"
+                          className="num px-1.5 py-0.5 text-[0.625rem]"
                           style={{
                             background: s.crackedInCap
                               ? 'color-mix(in oklab, var(--color-varc) 20%, transparent)'
@@ -158,7 +160,7 @@ export function Today() {
                           {s.crackedInCap ? 'cracked' : 'no crack'}
                         </span>
                         <span
-                          className="num rounded px-1.5 py-0.5 text-[0.625rem]"
+                          className="num px-1.5 py-0.5 text-[0.625rem]"
                           style={{
                             background: s.triageWasCorrect
                               ? 'color-mix(in oklab, var(--color-dilr) 20%, transparent)'
@@ -172,7 +174,7 @@ export function Today() {
                         </span>
                       </>
                     ) : (
-                      <span className="num rounded bg-line px-1.5 py-0.5 text-[0.625rem] text-chalk-mute">
+                      <span className="num bg-line px-1.5 py-0.5 text-[0.625rem] text-chalk-mute">
                         learning
                       </span>
                     )}
@@ -270,7 +272,7 @@ export function Today() {
 
       <Panel eyebrow="Notes" title={undefined}>
         <textarea
-          className="min-h-20 w-full resize-y rounded-lg border border-line bg-raised px-3 py-2 text-sm text-chalk placeholder:text-chalk-mute focus:border-chalk-mute"
+          className="min-h-20 w-full resize-y border border-line bg-raised px-3 py-2 text-sm text-chalk placeholder:text-chalk-mute focus:border-chalk-mute"
           value={log.notes ?? ''}
           onChange={(e) => patchDayLog(activeDate, { notes: e.target.value })}
           placeholder="Anything worth remembering about today"

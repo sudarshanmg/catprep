@@ -75,7 +75,7 @@ export function Mocks() {
         }
       >
         {editing === 'new' && (
-          <div className="mb-4 rounded-lg border border-line bg-raised/40 p-3">
+          <div className="mb-4 border border-line bg-raised/40 p-3">
             <MockForm date={activeDate} onDone={() => setEditing(null)} />
           </div>
         )}
@@ -113,7 +113,7 @@ export function Mocks() {
                         </button>
                         {!m.analysisDone && (
                           <span
-                            className="num ml-2 rounded px-1.5 py-0.5 text-[0.625rem]"
+                            className="num ml-2 px-1.5 py-0.5 text-[0.625rem]"
                             style={{
                               background: 'color-mix(in oklab, var(--color-warning) 20%, transparent)',
                               color: 'var(--color-warning)',
@@ -164,7 +164,7 @@ export function Mocks() {
         )}
 
         {editingMock && (
-          <div className="mt-4 rounded-lg border border-line bg-raised/40 p-3">
+          <div className="mt-4 border border-line bg-raised/40 p-3">
             <div className="eyebrow mb-3">
               Editing {editingMock.name ?? fmtDate(editingMock.date)}
             </div>

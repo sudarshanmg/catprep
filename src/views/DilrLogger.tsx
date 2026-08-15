@@ -104,8 +104,14 @@ export function DilrLogger({
         role="dialog"
         aria-modal="true"
         aria-label="Log a DILR set"
-        className="relative flex max-h-[92dvh] w-full flex-col rounded-t-2xl border border-line bg-slate sm:max-w-lg sm:rounded-2xl"
+        className="brackets relative flex max-h-[92dvh] w-full flex-col border border-line bg-slate sm:max-w-lg"
       >
+        {/* Lit edge, as on every panel — this sheet is the one the user sees most. */}
+        <span
+          aria-hidden
+          className="glow absolute top-0 right-3 left-3 h-px bg-dilr"
+          style={{ ['--glow' as string]: 'var(--color-dilr)' }}
+        />
         <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
           <div>
             <div className="eyebrow">Log a DILR set</div>
@@ -117,7 +123,7 @@ export function DilrLogger({
           <button
             type="button"
             onClick={onClose}
-            className="-mr-1 grid h-10 w-10 place-items-center rounded-lg text-chalk-mute hover:text-chalk"
+            className="-mr-1 grid h-10 w-10 place-items-center text-chalk-mute hover:text-chalk"
             aria-label="Close"
           >
             <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none">
@@ -152,7 +158,7 @@ export function DilrLogger({
                       type="button"
                       aria-pressed={active}
                       onClick={() => setArchetype(a)}
-                      className="min-h-11 rounded-lg border px-3 text-sm transition-colors"
+                      className="min-h-11 border px-3 text-sm transition-colors"
                       style={{
                         borderColor: active ? 'var(--color-dilr)' : 'var(--color-line)',
                         background: active
@@ -265,7 +271,7 @@ export function DilrLogger({
                     type="button"
                     aria-pressed={scaffold === s}
                     onClick={() => setScaffold(scaffold === s ? '' : s)}
-                    className="min-h-10 rounded-lg border px-3 text-sm transition-colors"
+                    className="min-h-10 border px-3 text-sm transition-colors"
                     style={{
                       borderColor: scaffold === s ? 'var(--color-chalk-mute)' : 'var(--color-line)',
                       background: scaffold === s ? 'var(--color-raised)' : 'transparent',

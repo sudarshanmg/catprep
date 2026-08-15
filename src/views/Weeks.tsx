@@ -38,9 +38,9 @@ function MeterRow({
           </span>
         </span>
       </div>
-      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line">
+      <div className="mt-1 h-1.5 overflow-hidden bg-line">
         <div
-          className="h-full rounded-full transition-[width]"
+          className="h-full transition-[width]"
           style={{ width: `${frac * 100}%`, background: color }}
         />
       </div>
@@ -89,7 +89,7 @@ function WeekCard({ w, past }: { w: WeekSpec; past: boolean }) {
         <span className="flex items-center gap-2">
           {w.label}
           <span
-            className="num rounded px-1.5 py-0.5 text-[0.625rem] font-normal"
+            className="num px-1.5 py-0.5 text-[0.625rem] font-normal"
             style={{
               background:
                 w.phase === 'B'
@@ -166,7 +166,7 @@ function WeekCard({ w, past }: { w: WeekSpec; past: boolean }) {
                     {Array.from({ length: n }).map((_, i) => (
                       <span
                         key={i}
-                        className="h-3 w-1.5 rounded-[1px]"
+                        className="h-3 w-1.5"
                         style={{
                           background: i < done ? SECTION_COLOR.DILR : 'var(--color-line)',
                         }}
@@ -202,7 +202,7 @@ function WeekCard({ w, past }: { w: WeekSpec; past: boolean }) {
                   <span className="text-chalk-mute">/{Math.round(w.lrShare * 100)}%</span>
                 </span>
               </div>
-              <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-line">
+              <div className="mt-1 flex h-1.5 overflow-hidden bg-line">
                 <div
                   className="h-full"
                   style={{

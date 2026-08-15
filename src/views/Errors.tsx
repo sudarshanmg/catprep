@@ -118,7 +118,7 @@ export function Errors() {
             {ERROR_TAGS.filter((t) => counts[t] > 0).map((t) => (
               <span
                 key={t}
-                className="num rounded px-1.5 py-0.5 text-[0.625rem]"
+                className="num px-1.5 py-0.5 text-[0.625rem]"
                 style={{
                   background: `color-mix(in oklab, ${TAG_COLOR[t]} 20%, transparent)`,
                   color: TAG_COLOR[t],
@@ -185,7 +185,7 @@ export function Errors() {
             {filtered.map((e) => (
               <li key={e.id} className="flex items-start gap-3 py-2.5">
                 <span
-                  className="mt-1 h-2.5 w-2.5 shrink-0 rounded-sm"
+                  className="mt-1 h-2.5 w-2.5 shrink-0"
                   style={{ background: TAG_COLOR[e.tag] }}
                   title={e.tag}
                 />

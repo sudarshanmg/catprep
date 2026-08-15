@@ -120,7 +120,7 @@ export function Dashboard() {
               rows={rows}
               metric="triage"
               target={TRIAGE_TARGET}
-              color="#3987e5"
+              color="#2fd8f5"
               targetLabel="60% target"
             />
           </div>
@@ -146,7 +146,7 @@ export function Dashboard() {
               rows={rows}
               metric="hit"
               target={HIT_RATE_TARGET}
-              color="#199e70"
+              color="#c9f24d"
               targetLabel="40% target"
             />
           </div>
@@ -245,9 +245,9 @@ export function Dashboard() {
             tone={store.mocks.some((m) => !m.analysisDone) ? 'warning' : 'default'}
           />
         </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line">
+        <div className="mt-3 h-1.5 overflow-hidden bg-line">
           <div
-            className="h-full rounded-full"
+            className="h-full"
             style={{
               width: `${Math.min(100, (qa.value ?? 0) * 100)}%`,
               background: 'var(--color-qa)',

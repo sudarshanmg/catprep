@@ -14,41 +14,43 @@ import type { ReactNode } from 'react';
 import { ERROR_TAGS, type DilrSetLog, type ErrorTag } from './types';
 import type { Coverage, WeekRow } from './metrics';
 import { pct } from './metrics';
-import { fmtDate } from './ui';
+import { MaskMotif, fmtDate } from './ui';
 
 /* ---------------------------------------------------------------------------
-   Chart color is functional. These are the validated categorical slots for the
-   dark surface #171C22 (see index.css) — verified with the dataviz validator for
-   lightness band, chroma floor, CVD separation, normal-vision separation and
-   contrast. Do not substitute values picked by eye.
+   Chart color is functional. These are the categorical slots for the violet-black
+   surface #120E26 (see index.css), picked on the Spider-Verse hues but held to the
+   same constraints as before: one lightness band, a chroma floor, and hue steps
+   wide enough to survive CVD (cyan / magenta / lime / violet separate on both the
+   red-green and blue-yellow axes). Spider red is deliberately absent — it belongs
+   to `--color-critical` alone. Do not substitute values picked by eye.
 --------------------------------------------------------------------------- */
 export const TAG_COLOR: Record<ErrorTag, string> = {
-  concept: '#3987e5',
-  silly: '#d95926',
-  selection: '#199e70',
-  time: '#c98500',
+  concept: '#2fd8f5',
+  silly: '#ff4d9d',
+  selection: '#c9f24d',
+  time: '#9d7bff',
 };
 
 export const SECTION_COLOR = {
-  QA: '#d95926',
-  DILR: '#3987e5',
-  VARC: '#199e70',
+  QA: '#ff4d9d',
+  DILR: '#2fd8f5',
+  VARC: '#c9f24d',
 } as const;
 
-const AXIS = '#737e89';
-const GRID = '#212a34';
-const SURFACE = '#171c22';
+const AXIS = '#8b82c2';
+const GRID = '#201a44';
+const SURFACE = '#120e26';
 
 const axisProps = {
   stroke: AXIS,
-  tick: { fill: AXIS, fontSize: 11, fontFamily: 'IBM Plex Mono, monospace' },
+  tick: { fill: AXIS, fontSize: 11, fontFamily: 'JetBrains Mono, monospace' },
   tickLine: false,
   axisLine: { stroke: GRID },
 } as const;
 
 function TooltipShell({ title, rows }: { title: string; rows: ReactNode }) {
   return (
-    <div className="rounded-lg border border-line bg-ink/95 px-3 py-2 shadow-lg backdrop-blur">
+    <div className="border border-line bg-ink/95 px-3 py-2 shadow-lg backdrop-blur">
       <div className="eyebrow mb-1.5">{title}</div>
       <div className="space-y-1">{rows}</div>
     </div>
@@ -69,12 +71,26 @@ function TooltipRow({
       {color && (
         <span
           aria-hidden
-          className="h-2 w-2 shrink-0 rounded-sm"
+          className="h-2 w-2 shrink-0"
           style={{ background: color }}
         />
       )}
       <span className="flex-1 text-chalk-dim">{label}</span>
       <span className="num font-medium text-chalk">{value}</span>
+    </div>
+  );
+}
+
+/** Empty chart slot. The mask shows through here and nowhere else — there is no
+ *  data to compete with, so the art gets the space. */
+function ChartEmpty({ height, children }: { height: string; children: ReactNode }) {
+  return (
+    <div
+      className="relative grid place-items-center overflow-hidden border border-dashed border-line"
+      style={{ height }}
+    >
+      <MaskMotif className="absolute top-1/2 left-1/2 w-36 -translate-x-1/2 -translate-y-1/2 opacity-[0.14]" />
+      <p className="relative text-sm text-chalk-mute">{children}</p>
     </div>
   );
 }
@@ -90,7 +106,7 @@ export function Legend({
         <li key={i.label} className="flex items-center gap-1.5 text-xs text-chalk-dim">
           <span
             aria-hidden
-            className="h-2.5 w-2.5 shrink-0 rounded-sm"
+            className="h-2.5 w-2.5 shrink-0"
             style={{ background: i.color }}
           />
           <span>{i.label}</span>
@@ -128,9 +144,7 @@ export function RatioTrend({
 
   if (!hasAny) {
     return (
-      <div className="grid h-[168px] place-items-center rounded-lg border border-dashed border-line text-sm text-chalk-mute">
-        No timed sets logged yet
-      </div>
+      <ChartEmpty height="168px">No timed sets logged yet</ChartEmpty>
     );
   }
 
@@ -157,7 +171,7 @@ export function RatioTrend({
               position: 'insideTopRight',
               fill: AXIS,
               fontSize: 10,
-              fontFamily: 'IBM Plex Mono, monospace',
+              fontFamily: 'JetBrains Mono, monospace',
             }}
           />
           <Tooltip
@@ -195,7 +209,7 @@ export function RatioTrend({
 
 /* ---------------------------------------------------------------------------
    Error tags: stacked bar by week. 2px surface gap between segments; only the top
-   segment gets rounded ends.
+   segment gets  ends.
 --------------------------------------------------------------------------- */
 export function TagStack({ rows }: { rows: WeekRow[] }) {
   const data = rows.map((r) => ({ label: r.label, ...r.tags }));
@@ -206,9 +220,7 @@ export function TagStack({ rows }: { rows: WeekRow[] }) {
 
   if (total === 0) {
     return (
-      <div className="grid h-[168px] place-items-center rounded-lg border border-dashed border-line text-sm text-chalk-mute">
-        No errors logged yet
-      </div>
+      <ChartEmpty height="168px">No errors logged yet</ChartEmpty>
     );
   }
 
@@ -220,7 +232,7 @@ export function TagStack({ rows }: { rows: WeekRow[] }) {
           <XAxis dataKey="label" {...axisProps} />
           <YAxis width={40} allowDecimals={false} {...axisProps} />
           <Tooltip
-            cursor={{ fill: '#ffffff0a' }}
+            cursor={{ fill: '#ffffff0f' }}
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null;
               const row = payload[0].payload as Record<string, number>;
@@ -262,9 +274,9 @@ const STATE_STYLE: Record<
   { bg: string; fg: string; border: string }
 > = {
   'not started': { bg: 'transparent', fg: 'var(--color-chalk-mute)', border: 'var(--color-line)' },
-  exposed: { bg: '#184f95', fg: '#dbe8fb', border: '#184f95' },
-  familiar: { bg: '#3987e5', fg: '#0f1216', border: '#3987e5' },
-  solid: { bg: '#9ec5f4', fg: '#0f1216', border: '#9ec5f4' },
+  exposed: { bg: '#17607a', fg: '#d6f6ff', border: '#17607a' },
+  familiar: { bg: '#2fd8f5', fg: '#0a0716', border: '#2fd8f5' },
+  solid: { bg: '#a9f0ff', fg: '#0a0716', border: '#a9f0ff' },
 };
 
 export const COVERAGE_STATES: Coverage['state'][] = [
@@ -278,7 +290,7 @@ export function CoverageCell({ c }: { c: Coverage }) {
   const s = STATE_STYLE[c.state];
   return (
     <div
-      className="rounded-lg border p-2.5"
+      className="border p-2.5"
       style={{ background: s.bg, borderColor: s.border }}
       title={`${c.archetype} — ${c.sets} set${c.sets === 1 ? '' : 's'}, ${c.state}${
         c.hitRate.value !== null ? `, ${pct(c.hitRate)} hit` : ''
@@ -315,7 +327,7 @@ export function CoverageLegend() {
         <li key={s} className="flex items-center gap-1.5 text-xs text-chalk-dim">
           <span
             aria-hidden
-            className="h-2.5 w-2.5 shrink-0 rounded-sm border"
+            className="h-2.5 w-2.5 shrink-0 border"
             style={{
               background: STATE_STYLE[s].bg,
               borderColor: STATE_STYLE[s].border,
@@ -341,15 +353,13 @@ export function TriageTape({ sets }: { sets: DilrSetLog[] }) {
 
   if (timed.length === 0) {
     return (
-      <div className="grid h-16 place-items-center rounded-lg border border-dashed border-line text-sm text-chalk-mute">
-        The tape fills in as you log timed sets
-      </div>
+      <ChartEmpty height="4.0rem">The tape fills in as you log timed sets</ChartEmpty>
     );
   }
 
   const lanes = [
-    { key: 'call' as const, label: 'call right', color: '#3987e5' },
-    { key: 'crack' as const, label: 'cracked', color: '#199e70' },
+    { key: 'call' as const, label: 'call right', color: '#2fd8f5' },
+    { key: 'crack' as const, label: 'cracked', color: '#c9f24d' },
   ];
 
   return (
@@ -364,14 +374,14 @@ export function TriageTape({ sets }: { sets: DilrSetLog[] }) {
                 return (
                   <span
                     key={s.id + lane.key}
-                    className="h-5 min-w-[3px] flex-1 rounded-[2px]"
+                    className="h-5 min-w-[3px] flex-1"
                     style={{
                       background: on ? lane.color : 'var(--color-raised)',
                       border: on ? 'none' : '1px solid var(--color-line)',
                     }}
                     title={`${fmtDate(s.date)} · ${s.archetype} · ${s.minutesSpent}m · call ${
                       s.triageWasCorrect ? 'right' : 'wrong'
-                    } · ${s.crackedInCap ? 'cracked' : 'not cracked'}`}
+                        } · ${s.crackedInCap ? 'cracked' : 'not cracked'}`}
                   />
                 );
               })}
@@ -403,9 +413,7 @@ export function MockScoreTrend({
 }) {
   if (data.length === 0) {
     return (
-      <div className="grid h-[188px] place-items-center rounded-lg border border-dashed border-line text-sm text-chalk-mute">
-        No mocks logged yet
-      </div>
+      <ChartEmpty height="188px">No mocks logged yet</ChartEmpty>
     );
   }
   return (

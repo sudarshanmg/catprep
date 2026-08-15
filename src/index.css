@@ -2,52 +2,68 @@
 
 /*
   CAT Sprint — visual system
-  "chalk on slate": a cool ink ground, warm chalk type, mono for every number.
-  Chart mark colors are the validated categorical slots (see charts.tsx) — they are
-  functional, not decorative, and must not be re-picked by eye.
+  "Spider-Verse HUD". Two sources, deliberately fused:
+
+  - Structure comes from the quickshell bar/control-center (~/.config/quickshell):
+    near-black panels, a lit hairline along one edge, L-shaped corner brackets that
+    frame a surface like a targeting reticle, stacked-shadow "fake bloom" instead of
+    a real blur pass, and mono type for every live value.
+  - Hue comes from the leap-of-faith frame (sp6): a violet-black night, neon cyan,
+    hot magenta. Spider red is kept out of the data marks and reserved for alarm.
+
+  Chart mark colors are functional, not decorative — they are the categorical slots
+  used in charts.tsx and must not be re-picked by eye.
 */
 @theme {
-  /* surfaces */
-  --color-ink: #0f1216; /* page ground */
-  --color-slate: #171c22; /* raised card / chart surface (palette validated vs this) */
-  --color-raised: #1f2731; /* inputs, hover */
-  --color-line: #2a3441; /* hairlines */
-  --color-line-soft: #212a34;
+  /* surfaces — violet-black, sampled off the sp6 night sky */
+  --color-ink: #0a0716; /* page ground */
+  --color-slate: #120e26; /* raised card / chart surface (palette validated vs this) */
+  --color-raised: #1a1438; /* inputs, hover */
+  --color-line: #2c2358; /* hairlines */
+  --color-line-soft: #201a44;
 
   /* type */
-  --color-chalk: #e8e4da; /* primary */
-  --color-chalk-dim: #a6adb5; /* secondary */
-  --color-chalk-mute: #737e89; /* muted / axis */
+  --color-chalk: #ece9fb; /* primary */
+  --color-chalk-dim: #b3aade; /* secondary */
+  --color-chalk-mute: #8b82c2; /* muted / axis — held at 4.5:1 on --color-slate */
+
+  /* neon — the three sign colors of the look */
+  --color-neon: #2fd8f5; /* primary: cyan */
+  --color-hot: #ff4d9d; /* accent: magenta, used for brackets */
+  --color-violet: #9d7bff;
 
   /* sections — fixed identity, never reassigned */
-  --color-qa: #d95926;
-  --color-dilr: #3987e5;
-  --color-varc: #199e70;
+  --color-qa: #ff4d9d;
+  --color-dilr: #2fd8f5;
+  --color-varc: #c9f24d;
 
   /* error tags — fixed slot order */
-  --color-tag-concept: #3987e5;
-  --color-tag-silly: #d95926;
-  --color-tag-selection: #199e70;
-  --color-tag-time: #c98500;
+  --color-tag-concept: #2fd8f5;
+  --color-tag-silly: #ff4d9d;
+  --color-tag-selection: #c9f24d;
+  --color-tag-time: #9d7bff;
 
   /* status — reserved, never reused as a series */
-  --color-good: #0ca30c;
-  --color-warning: #fab219;
-  --color-critical: #d03b3b;
+  --color-good: #38e8a0;
+  --color-warning: #ffc23d;
+  --color-critical: #ff3b47; /* spider red */
 
   /* confidence ramp (ordinal, one hue) */
-  --color-conf-1: #184f95;
-  --color-conf-2: #3987e5;
-  --color-conf-3: #9ec5f4;
+  --color-conf-1: #17607a;
+  --color-conf-2: #2fd8f5;
+  --color-conf-3: #a9f0ff;
 
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* JetBrainsMono is the shell's font — the app reads as part of the desktop */
+  --font-mono: 'JetBrains Mono', 'JetBrainsMono Nerd Font', ui-monospace, monospace;
 }
 
 html {
   color-scheme: dark;
-  background: var(--color-ink);
+  /* No background here on purpose: body's background propagates to the canvas,
+     which leaves room for the negative-z-index ground layers below to paint. Set
+     one on <html> and it covers them — they sit behind the root's background. */
   -webkit-text-size-adjust: 100%;
 }
 
@@ -59,6 +75,40 @@ body {
   -webkit-font-smoothing: antialiased;
   /* the app is a fixed-height shell; only panels scroll */
   overscroll-behavior-y: none;
+}
+
+/* ---------------------------------------------------------------------------
+   The ground: sp6 pinned behind everything, dimmed to near-nothing, with a
+   Ben-Day halftone over it. Both are fixed and pointer-transparent, so they read
+   as the surface the HUD is printed on rather than as content. Panels stay
+   opaque on top — the app is used tired at 22:30 and the data never competes
+   with the art.
+--------------------------------------------------------------------------- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, #0a0716e0 0%, #0a0716c4 45%, #0a0716f2 100%),
+    url('/ground.jpg') center / cover no-repeat;
+  filter: saturate(1.25) contrast(1.05);
+}
+
+/* Halftone dots — the comic print texture, on a 5px grid. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.32;
+  background-image: radial-gradient(var(--color-violet) 0.75px, transparent 0.9px);
+  background-size: 4px 4px;
+  /* Fades in below the header: the date bar and the wordmark sit on clean
+     ground, and the texture only shows where panels do the reading work. */
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #0008 70%, transparent 100%);
 }
 
 /* Numbers are data: tabular everywhere, so columns of metrics line up. */
@@ -73,15 +123,75 @@ body {
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   color: var(--color-chalk-mute);
 }
 
+/* ---------------------------------------------------------------------------
+   Neon bloom. A short stacked-shadow falloff, not a blur — same reasoning as
+   components/Glow.qml: it gives the hard halo of a lit sign, and it costs
+   nothing to repaint. `--glow` is the hue; set it on the element.
+--------------------------------------------------------------------------- */
+.glow {
+  box-shadow:
+    0 0 2px color-mix(in oklab, var(--glow) 55%, transparent),
+    0 0 6px color-mix(in oklab, var(--glow) 30%, transparent),
+    0 0 14px color-mix(in oklab, var(--glow) 14%, transparent);
+}
+
+.glow-text {
+  text-shadow:
+    0 0 6px color-mix(in oklab, var(--glow) 45%, transparent),
+    0 0 18px color-mix(in oklab, var(--glow) 20%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Chromatic aberration — the Spider-Verse mis-registered print. Reserved for the
+   wordmark and the active nav item; it is illegible at body size, so it never
+   touches anything you actually have to read closely.
+--------------------------------------------------------------------------- */
+.aberrate {
+  text-shadow:
+    -0.04em 0 0 color-mix(in oklab, var(--color-critical) 75%, transparent),
+    0.04em 0 0 color-mix(in oklab, var(--color-neon) 75%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Corner brackets — the reticle ticks from bar/Bar.qml, as two L-shaped marks on
+   opposite corners. Purely a frame: they carry no state, so they stay quiet
+   magenta on every panel and never encode anything.
+--------------------------------------------------------------------------- */
+.brackets {
+  position: relative;
+}
+.brackets::before,
+.brackets::after {
+  content: '';
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  border-color: var(--color-hot);
+  opacity: 0.85;
+}
+.brackets::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+.brackets::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+}
+
 *:focus-visible {
-  outline: 2px solid var(--color-conf-3);
+  outline: 2px solid var(--color-neon);
   outline-offset: 2px;
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 /* Recharts hygiene: recessive grid, no focus rings on surfaces */

@@ -1,10 +1,26 @@
 import type { ReactNode } from 'react';
 
 /* ---------------------------------------------------------------------------
-   Shared primitives. Two rules hold everywhere:
+   Shared primitives. Three rules hold everywhere:
    - every number wears `.num` (mono, tabular) so metric columns align
    - anything tappable is at least 44px tall; the logging forms are used at 22:30
+   - corners are hard. Radius is not part of this system: surfaces are framed by
+     a lit hairline and the corner brackets (see .brackets in index.css), the way
+     the shell's bar frames its dock.
 --------------------------------------------------------------------------- */
+
+/** The mask from sp1, screened over the panel so its black drops out. Decorative
+ *  only — always aria-hidden, and never carries information. */
+export function MaskMotif({ className = '' }: { className?: string }) {
+  return (
+    <img
+      src="/mask.jpg"
+      alt=""
+      aria-hidden
+      className={`pointer-events-none select-none mix-blend-screen ${className}`}
+    />
+  );
+}
 
 export function Panel({
   eyebrow,
@@ -12,17 +28,28 @@ export function Panel({
   aside,
   children,
   className = '',
+  /** Hue of the lit top edge. Defaults to the cyan primary. */
+  edge = 'var(--color-neon)',
 }: {
   eyebrow?: string;
   title?: ReactNode;
   aside?: ReactNode;
   children: ReactNode;
   className?: string;
+  edge?: string;
 }) {
   return (
     <section
-      className={`rounded-xl border border-line bg-slate p-4 sm:p-5 ${className}`}
+      className={`brackets relative border border-line bg-slate p-4 sm:p-5 ${className}`}
     >
+      {/* The lit edge: the single strongest cue in the look, so it gets a real
+          glow rather than a tint. Stops short of each end so the brackets
+          terminate the rule instead of being painted over by it. */}
+      <span
+        aria-hidden
+        className="glow absolute top-0 right-3 left-3 h-px"
+        style={{ background: edge, ['--glow' as string]: edge }}
+      />
       {(eyebrow || title || aside) && (
         <header className="mb-4 flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -52,18 +79,24 @@ export function Stat({
   sub?: ReactNode;
   tone?: 'default' | 'good' | 'warning' | 'critical';
 }) {
-  const toneClass =
+  const color =
     tone === 'good'
-      ? 'text-good'
+      ? 'var(--color-good)'
       : tone === 'warning'
-        ? 'text-warning'
+        ? 'var(--color-warning)'
         : tone === 'critical'
-          ? 'text-critical'
-          : 'text-chalk';
+          ? 'var(--color-critical)'
+          : 'var(--color-chalk)';
   return (
     <div>
       <div className="eyebrow">{label}</div>
-      <div className={`num mt-1 text-2xl leading-none font-medium ${toneClass}`}>{value}</div>
+      {/* Live values are lit, like the readouts in the bar. */}
+      <div
+        className="num glow-text mt-1 text-2xl leading-none font-medium"
+        style={{ color, ['--glow' as string]: color }}
+      >
+        {value}
+      </div>
       {sub && <div className="num mt-1.5 text-xs text-chalk-mute">{sub}</div>}
     </div>
   );
@@ -83,20 +116,23 @@ export function CheckRow({
   hint?: string;
   accent?: string;
 }) {
+  const hue = accent ?? 'var(--color-neon)';
   return (
     <button
       type="button"
       role="checkbox"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex min-h-14 w-full items-center gap-3 rounded-lg border border-line-soft bg-raised/50 px-3 text-left transition-colors hover:bg-raised active:bg-raised"
+      className="flex min-h-14 w-full items-center gap-3 border border-line-soft bg-raised/50 px-3 text-left transition-colors hover:border-line hover:bg-raised active:bg-raised"
+      style={checked ? { borderLeft: `2px solid ${hue}` } : undefined}
     >
       <span
         aria-hidden
-        className="grid h-6 w-6 shrink-0 place-items-center rounded-[5px] border-2 transition-colors"
+        className={checked ? 'glow grid h-6 w-6 shrink-0 place-items-center border-2' : 'grid h-6 w-6 shrink-0 place-items-center border-2'}
         style={{
-          borderColor: checked ? (accent ?? 'var(--color-chalk)') : 'var(--color-line)',
-          background: checked ? (accent ?? 'var(--color-chalk)') : 'transparent',
+          borderColor: checked ? hue : 'var(--color-line)',
+          background: checked ? hue : 'transparent',
+          ['--glow' as string]: hue,
         }}
       >
         {checked && (
@@ -104,7 +140,7 @@ export function CheckRow({
             <path
               d="M2 7.5 5.5 11 12 3.5"
               stroke="var(--color-ink)"
-              strokeWidth="2.4"
+              strokeWidth="2.6"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -142,7 +178,7 @@ export function Stepper({
   label: string;
 }) {
   const btn =
-    'grid h-12 w-12 shrink-0 place-items-center rounded-lg border border-line bg-raised text-xl text-chalk transition-colors hover:border-chalk-mute active:bg-line disabled:opacity-30';
+    'grid h-12 w-12 shrink-0 place-items-center border border-line bg-raised text-xl text-chalk transition-colors hover:border-neon hover:text-neon active:bg-line disabled:opacity-30 disabled:hover:border-line disabled:hover:text-chalk';
   return (
     <div className="flex items-center gap-3">
       <button
@@ -155,7 +191,10 @@ export function Stepper({
         −
       </button>
       <div className="flex-1 text-center">
-        <div className="num text-3xl leading-none font-medium text-chalk">
+        <div
+          className="num glow-text text-3xl leading-none font-medium text-chalk"
+          style={{ ['--glow' as string]: 'var(--color-neon)' }}
+        >
           {value}
           {target !== undefined && (
             <span className="text-lg text-chalk-mute"> / {target}</span>
@@ -199,18 +238,23 @@ export function Segmented<T extends string>({
       >
         {options.map((o) => {
           const active = value === o.value;
-          const accent = colorFor?.(o.value) ?? 'var(--color-chalk)';
+          const accent = colorFor?.(o.value) ?? 'var(--color-neon)';
           return (
             <button
               key={o.value}
               type="button"
               aria-pressed={active}
               onClick={() => onChange(o.value)}
-              className="min-h-12 rounded-lg border px-2 py-2 text-center text-sm transition-colors"
+              className={`min-h-12 border px-2 py-2 text-center text-sm transition-colors ${
+                active ? 'glow' : ''
+              }`}
               style={{
                 borderColor: active ? accent : 'var(--color-line)',
-                background: active ? `color-mix(in oklab, ${accent} 16%, transparent)` : 'transparent',
+                background: active
+                  ? `color-mix(in oklab, ${accent} 18%, transparent)`
+                  : 'transparent',
                 color: active ? 'var(--color-chalk)' : 'var(--color-chalk-dim)',
+                ['--glow' as string]: accent,
               }}
             >
               <span className="block leading-tight">{o.label}</span>
@@ -246,9 +290,9 @@ export function Field({
 }
 
 export const inputClass =
-  'w-full min-h-12 rounded-lg border border-line bg-raised px-3 text-[0.9375rem] text-chalk placeholder:text-chalk-mute focus:border-chalk-mute';
+  'w-full min-h-12 border border-line bg-raised px-3 text-[0.9375rem] text-chalk placeholder:text-chalk-mute focus:border-neon';
 
-export const selectClass = `${inputClass} appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%23737e89' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")] bg-[length:12px] bg-[position:right_0.85rem_center] bg-no-repeat pr-9`;
+export const selectClass = `${inputClass} appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%232fd8f5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")] bg-[length:12px] bg-[position:right_0.85rem_center] bg-no-repeat pr-9`;
 
 export function Button({
   children,
@@ -266,12 +310,14 @@ export function Button({
   full?: boolean;
 }) {
   const base =
-    'inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-colors disabled:opacity-40';
+    'inline-flex min-h-12 items-center justify-center gap-2 px-4 text-sm font-medium tracking-wide transition-colors disabled:opacity-40';
   const variants = {
-    primary: 'bg-chalk text-ink hover:bg-white',
-    secondary: 'border border-line bg-raised text-chalk hover:border-chalk-mute',
-    ghost: 'text-chalk-dim hover:text-chalk',
-    danger: 'border border-critical/40 text-critical hover:bg-critical/10',
+    // The one lit control on a screen — cyan sign on violet-black.
+    primary:
+      'glow border border-neon bg-neon/20 font-semibold tracking-wider text-neon uppercase hover:bg-neon/30 disabled:shadow-none',
+    secondary: 'border border-line bg-raised text-chalk hover:border-neon hover:text-neon',
+    ghost: 'text-chalk-dim hover:text-neon',
+    danger: 'border border-critical/50 text-critical hover:bg-critical/10',
   } as const;
   return (
     <button
@@ -279,17 +325,21 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
       className={`${base} ${variants[variant]} ${full ? 'w-full' : ''}`}
+      style={variant === 'primary' ? { ['--glow' as string]: 'var(--color-neon)' } : undefined}
     >
       {children}
     </button>
   );
 }
 
+/** Empty state. The mask sits behind the message, screened and faint — the one
+ *  place the art shows through, because there is no data to compete with. */
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-lg border border-dashed border-line px-3 py-6 text-center text-sm text-chalk-mute">
-      {children}
-    </p>
+    <div className="relative grid min-h-[104px] place-items-center overflow-hidden border border-dashed border-line px-3 py-6">
+      <MaskMotif className="absolute top-1/2 left-1/2 w-32 -translate-x-1/2 -translate-y-1/2 opacity-[0.16]" />
+      <p className="relative text-center text-sm text-chalk-mute">{children}</p>
+    </div>
   );
 }
 
@@ -309,7 +359,7 @@ export function Notice({
         : 'var(--color-chalk-mute)';
   return (
     <div
-      className="rounded-lg border-l-2 bg-raised/60 px-3 py-2.5 text-sm text-chalk-dim"
+      className="border-l-2 bg-raised/60 px-3 py-2.5 text-sm text-chalk-dim"
       style={{ borderLeftColor: color }}
     >
       {children}

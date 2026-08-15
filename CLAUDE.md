@@ -214,6 +214,27 @@ Show rolling 7-day values alongside all-time so improvement is visible.
 - Show streaks and totals, but never gamify with guilt. If a day is missed, show it neutrally.
 - The Today view should never require scrolling to reach the primary actions.
 
+### Visual system — "Spider-Verse HUD"
+
+Two sources, fused. Tokens live in `src/index.css`; primitives in `src/ui.tsx`.
+
+- **Structure** is copied from the user's quickshell shell (`~/.config/quickshell`): every
+  surface is framed by a lit hairline along one edge plus two L-shaped corner brackets
+  (`.brackets`), corners are hard (radius is not part of this system), bloom is a stacked
+  box-shadow rather than a blur (`.glow`, mirroring `components/Glow.qml`), and every live
+  value is mono — JetBrains Mono, the shell's own font.
+- **Hue** comes from the *Into the Spider-Verse* leap-of-faith frame: violet-black ground
+  (`--color-ink` #0A0716), cyan primary (`--color-neon`), hot magenta accent
+  (`--color-hot`, used for the brackets). Spider red is reserved for `--color-critical`
+  and never appears as a data mark.
+- **Art** (`public/`, downscaled from `~/.config/backgrounds`): `ground.jpg` from sp6 sits
+  fixed behind everything at low contrast under a Ben-Day halftone; `mask.jpg` from sp1
+  shows through empty states only, screened so its black drops out. Panels stay opaque —
+  the data never competes with the art. `<html>` must not carry a background, or it paints
+  over the negative-z-index ground layers.
+- Chart slots (`charts.tsx`): QA magenta, DILR cyan, VARC lime, error tag `time` violet.
+  Same constraints as before — one lightness band, wide hue steps for CVD.
+
 ## Non-goals
 
 - No auth, no multi-user, no cloud sync
